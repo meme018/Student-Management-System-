@@ -15,6 +15,7 @@
     "@mui/material": "^7.3.5",
     "@tailwindcss/vite": "^4.1.17",
     "chance": "^1.1.13",
+    "flowbite": "^4.0.1",
     "material-ui-popup-state": "^5.3.6",
     "nodemon": "^3.1.11",
     "react": "^19.2.0",
