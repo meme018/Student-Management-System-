@@ -2,9 +2,18 @@ require("dotenv").config();
 const express = require("express");
 const connectDatabase = require("./database");
 const Student = require("./model/studentModel");
+const cors = require("cors");
 
 const app = express();
 
+const corsOptions = {
+  origin: ["http://localhost:5173"],
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(cors());
 app.use(express.json());
 
 connectDatabase();

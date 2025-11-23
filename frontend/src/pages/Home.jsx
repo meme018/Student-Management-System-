@@ -5,46 +5,22 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-// import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import { Link, useNavigate } from "react-router";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router";
 import { TableVirtuoso } from "react-virtuoso";
-import Chance from "chance";
+import { useGetStudentsQuery } from "../services/studentApi";
 
 const Home = () => {
   const nav = useNavigate();
-  // const handleEdit = (row) => {
-  //   console.log("Editing:", row);
-  //   alert("Edit feature will go here!");
-  // };
-
-  // const handleDelete = (row) => {
-  //   console.log("Deleting:", row);
-  //   alert("Delete feature will go here!");
-  // };
-
-  const chance = new Chance(42);
-
-  function createData(id) {
-    return {
-      id,
-      fullName: chance.first(),
-      age: chance.age(),
-      courseEnrolled: chance.last(),
-      email: chance.email(),
-      action: chance.email(),
-    };
-  }
+  const { data: students, error, isLoading } = useGetStudentsQuery();
 
   const columns = [
     {
-      width: 100,
+      width: 70,
       label: "Full Name",
       dataKey: "fullName",
     },
-
     {
       width: 50,
       label: "Age",
@@ -57,7 +33,7 @@ const Home = () => {
       dataKey: "email",
     },
     {
-      width: 80,
+      width: 100,
       label: "Course Enrolled",
       dataKey: "courseEnrolled",
     },
@@ -67,8 +43,6 @@ const Home = () => {
       dataKey: "actions",
     },
   ];
-
-  const rows = Array.from({ length: 200 }, (_, index) => createData(index));
 
   const VirtuosoTableComponents = {
     Scroller: React.forwardRef((props, ref) => (
@@ -87,14 +61,12 @@ const Home = () => {
             fontSize: "15px",
             borderBottom: "2px solid #E8E8E8",
           },
-
           "& td": {
             color: "#4B5563",
             fontSize: "14px",
             padding: "10px",
             borderBottom: "1px solid #E8E8E8",
           },
-
           "& tr:hover td": {
             backgroundColor: "#FFF6F1",
           },
@@ -154,7 +126,6 @@ const Home = () => {
                 >
                   Edit
                 </button>
-
                 <button
                   onClick={() => handleDelete(row)}
                   className="px-3 py-1 rounded-lg text-sm font-medium bg-[#F7A8B8] text-gray-700 hover:bg-[#E799A8] transition"
@@ -177,10 +148,10 @@ const Home = () => {
         Welcome to Student Management System
       </h1>
 
-      <div className="flex flex-row items-center gap-6 w-full max-w-5xl ">
+      <div className="flex flex-row items-center gap-6 w-full max-w-5xl">
         {/* Search Bar */}
         <div className="flex-1">
-          <form className="relative flex w-full items-center rounded-xl border border-black bg-white shadow-md">
+          <div className="relative flex w-full items-center rounded-xl border border-black bg-white shadow-md">
             <svg
               className="absolute left-3 h-5 w-5 text-black"
               xmlns="http://www.w3.org/2000/svg"
@@ -203,18 +174,18 @@ const Home = () => {
             />
 
             <button
-              type="submit"
+              onClick={(e) => e.preventDefault()}
               className="absolute right-2 top-1/2 -translate-y-1/2 h-11 px-6 bg-[#A7C7E7] text-gray-700 font-medium rounded-lg hover:bg-[#94B6D8] transition"
             >
               Search
             </button>
-          </form>
+          </div>
         </div>
 
         {/* Add Student Button */}
         <button
           onClick={() => nav("/AddStudent")}
-          className="h-12 w-40 rounded-xl text-base border-2 font-bold hover:bg-[#FDEEDC] "
+          className="h-12 w-40 rounded-xl text-base border-2 font-bold hover:bg-[#FDEEDC]"
         >
           Add Student
         </button>
@@ -222,15 +193,31 @@ const Home = () => {
 
       {/* Table */}
       <Paper
-        className="mt-10 w-full max-w-5xl shadow-lg rounded-2xl border "
+        className="mt-10 w-full max-w-5xl shadow-lg rounded-2xl border"
         style={{ height: 420 }}
       >
-        <TableVirtuoso
-          data={rows}
-          components={VirtuosoTableComponents}
-          fixedHeaderContent={fixedHeaderContent}
-          itemContent={rowContent}
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <CircularProgress />
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-red-600 text-lg">
+              Error loading students: {error.message || "Something went wrong"}
+            </p>
+          </div>
+        ) : students && students.length > 0 ? (
+          <TableVirtuoso
+            data={students}
+            components={VirtuosoTableComponents}
+            fixedHeaderContent={fixedHeaderContent}
+            itemContent={rowContent}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-600 text-lg">No students found</p>
+          </div>
+        )}
       </Paper>
     </div>
   );
