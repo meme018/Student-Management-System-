@@ -23,7 +23,7 @@ connectDatabase();
 const studentValidation = [
   body("name").trim().notEmpty().withMessage("Name is required"),
   body("email").trim().isEmail().withMessage("Valid email is required"),
-  body("age").isInt({ min: 1, max: 150 }).withMessage("Valid age is required"),
+  body("age").isInt({ min: 14, max: 150 }).withMessage("Valid age is required"),
   body("courseEnrolled").trim().notEmpty().withMessage("Course is required"),
 ];
 
