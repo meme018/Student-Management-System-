@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { TextField, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router";
 import { usePostStudentMutation } from "../services/studentApi.js";
+import { toast } from "react-toastify";
 
 const AddStudent = () => {
   const nav = useNavigate();
-  const [postStudent, { isLoading, isError, error, isSuccess }] =
-    usePostStudentMutation();
+  const [postStudent, { isLoading, isError, error }] = usePostStudentMutation();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -76,7 +76,7 @@ const AddStudent = () => {
       await postStudent(studentData).unwrap();
 
       // Show success message
-      alert("Student added successfully!");
+      toast.success("Student added successfully!");
 
       // Reset form
       setFormData({
@@ -104,7 +104,7 @@ const AddStudent = () => {
     <div className="flex justify-center items-center min-h-screen flex-col gap-10 py-10">
       <button
         onClick={() => nav("/")}
-        className="p-2 h-12 w-40 rounded-xl border text-base font-bold mr-auto ml-10 hover:bg-[#FDEEDC]"
+        className="p-2 h-12 w-40 rounded-xl border text-base font-bold mr-128 hover:bg-[#FDEEDC]"
       >
         Back to Home
       </button>
@@ -120,6 +120,7 @@ const AddStudent = () => {
         <TextField
           name="name"
           label="Full Name"
+          placeholder="Enter full name (must be at least 2 characters)"
           variant="outlined"
           value={formData.name}
           onChange={handleChange}
@@ -133,6 +134,7 @@ const AddStudent = () => {
           name="email"
           label="Email"
           variant="outlined"
+          placeholder="example@gmail.com"
           type="email"
           value={formData.email}
           onChange={handleChange}
@@ -141,10 +143,10 @@ const AddStudent = () => {
           required
           fullWidth
         />
-
         <TextField
           name="age"
           label="Age"
+          placeholder="enter age (must be 14+)"
           variant="outlined"
           type="number"
           value={formData.age}
@@ -158,6 +160,7 @@ const AddStudent = () => {
         <TextField
           name="courseEnrolled"
           label="Course Enrolled"
+          placeholder="Enter course name"
           variant="outlined"
           value={formData.courseEnrolled}
           onChange={handleChange}
@@ -171,12 +174,6 @@ const AddStudent = () => {
           <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
             Error:{" "}
             {error?.data?.message || error?.message || "Failed to add student"}
-          </div>
-        )}
-
-        {isSuccess && (
-          <div className="p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-            Student added successfully!
           </div>
         )}
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -9,11 +9,18 @@ import TableRow from "@mui/material/TableRow";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useNavigate } from "react-router";
 import { TableVirtuoso } from "react-virtuoso";
-import { useGetStudentsQuery } from "../services/studentApi";
+import {
+  useGetStudentsQuery,
+  useDeleteStudentMutation,
+} from "../services/studentApi";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const nav = useNavigate();
   const { data: students, error, isLoading } = useGetStudentsQuery();
+  const [deleteStudent] = useDeleteStudentMutation();
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   const columns = [
     {
@@ -101,14 +108,30 @@ const Home = () => {
   }
 
   const handleEdit = (row) => {
-    console.log("Editing:", row);
-    alert(`Editing student: ${row.name}`);
+    nav(`/EditStudent/${row._id}`, { state: { student: row } });
   };
 
-  const handleDelete = (row) => {
-    console.log("Deleting:", row);
-    alert(`Deleting student: ${row.name}`);
+  const handleDelete = async (row) => {
+    if (window.confirm(`Are you sure you want to delete ${row.name}?`)) {
+      try {
+        await deleteStudent(row._id).unwrap();
+        toast.success(`Student ${row.name}  deleted successfully!`);
+      } catch (err) {
+        alert("Failed to delete student", err);
+      }
+    }
   };
+
+  // Filter students based on search query
+  const filteredStudents =
+    students?.data?.filter((student) => {
+      const query = searchQuery.toLowerCase();
+      return (
+        student.name?.toLowerCase().includes(query) ||
+        student.email?.toLowerCase().includes(query) ||
+        student.courseEnrolled?.toLowerCase().includes(query)
+      );
+    }) || [];
 
   function rowContent(_index, row) {
     return (
@@ -169,6 +192,8 @@ const Home = () => {
             <input
               type="text"
               name="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-14 pl-12 pr-40 rounded-xl text-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
               placeholder="Search student by name, course..."
             />
@@ -206,16 +231,18 @@ const Home = () => {
               Error loading students: {error.message || "Something went wrong"}
             </p>
           </div>
-        ) : students?.data && students.data.length > 0 ? (
+        ) : filteredStudents.length > 0 ? (
           <TableVirtuoso
-            data={students.data}
+            data={filteredStudents}
             components={VirtuosoTableComponents}
             fixedHeaderContent={fixedHeaderContent}
             itemContent={rowContent}
           />
         ) : (
           <div className="flex items-center justify-center h-full">
-            <p className="text-gray-600 text-lg">No students found</p>
+            <p className="text-gray-600 text-lg">
+              {searchQuery ? "No students found" : "No students found"}
+            </p>
           </div>
         )}
       </Paper>

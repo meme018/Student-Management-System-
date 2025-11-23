@@ -5,9 +5,11 @@ export const studentApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "https://student-management-system-wt9p.onrender.com/",
   }),
+  tagTypes: ["Students"],
   endpoints: (builder) => ({
     getStudents: builder.query({
       query: () => "/student",
+      providesTags: ["Students"],
     }),
 
     // add student
@@ -17,8 +19,40 @@ export const studentApi = createApi({
         method: "POST",
         body: student,
       }),
+      invalidatesTags: ["Students"],
+    }),
+
+    // update student
+    updateStudent: builder.mutation({
+      query: ({ id, ...student }) => ({
+        url: `/student/${id}`,
+        method: "PATCH",
+        body: student,
+      }),
+      invalidatesTags: ["Students"],
+    }),
+
+    // delete student
+    deleteStudent: builder.mutation({
+      query: (id) => ({
+        url: `/student/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Students"],
+    }),
+
+    // search student
+    getStudentBySearch: builder.query({
+      query: (search) => `/student/search${search}`,
+      providesTags: ["Students"],
     }),
   }),
 });
 
-export const { useGetStudentsQuery, usePostStudentMutation } = studentApi;
+export const {
+  useGetStudentsQuery,
+  usePostStudentMutation,
+  useUpdateStudentMutation,
+  useDeleteStudentMutation,
+  useGetStudentBySearchQuery,
+} = studentApi;
