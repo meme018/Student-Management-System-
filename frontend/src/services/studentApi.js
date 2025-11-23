@@ -9,7 +9,16 @@ export const studentApi = createApi({
     getStudents: builder.query({
       query: () => "/student",
     }),
+
+    // add student
+    postStudent: builder.mutation({
+      query: (student) => ({
+        url: "/student",
+        method: "POST",
+        body: student,
+      }),
+    }),
   }),
 });
 
-export const { useGetStudentsQuery } = studentApi;
+export const { useGetStudentsQuery, usePostStudentMutation } = studentApi;

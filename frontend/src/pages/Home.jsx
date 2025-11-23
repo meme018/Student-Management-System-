@@ -19,7 +19,7 @@ const Home = () => {
     {
       width: 70,
       label: "Full Name",
-      dataKey: "fullName",
+      dataKey: "name",
     },
     {
       width: 50,
@@ -102,12 +102,12 @@ const Home = () => {
 
   const handleEdit = (row) => {
     console.log("Editing:", row);
-    alert(`Editing student: ${row.fullName}`);
+    alert(`Editing student: ${row.name}`);
   };
 
   const handleDelete = (row) => {
     console.log("Deleting:", row);
-    alert(`Deleting student: ${row.fullName}`);
+    alert(`Deleting student: ${row.name}`);
   };
 
   function rowContent(_index, row) {
@@ -206,9 +206,9 @@ const Home = () => {
               Error loading students: {error.message || "Something went wrong"}
             </p>
           </div>
-        ) : students && students.length > 0 ? (
+        ) : students?.data && students.data.length > 0 ? (
           <TableVirtuoso
-            data={students}
+            data={students.data}
             components={VirtuosoTableComponents}
             fixedHeaderContent={fixedHeaderContent}
             itemContent={rowContent}
