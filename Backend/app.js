@@ -8,7 +8,10 @@ const { query, body, validationResult } = require("express-validator");
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: [
+    "http://localhost:5173",
+    "https://student-management-system-nine-omega.vercel.app",
+  ],
   methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
